@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>매장 등록 신청 | 두바이 쫀득쿠키 택배 매장 모음</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #eee;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            color: #ff6b6b;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            color: #aaa;
+            font-size: 1em;
+            margin-bottom: 20px;
+        }
+
+        .info-box {
+            background: rgba(100,149,237,0.1);
+            border: 1px solid rgba(100,149,237,0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-box h3 {
+            color: #6495ed;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .form-container {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 1.05em;
+        }
+
+        .required {
+            color: #ff6b6b;
+            margin-left: 5px;
+        }
+
+        .optional {
+            color: #888;
+            font-size: 0.85em;
+            font-weight: normal;
+            margin-left: 5px;
+        }
+
+        input[type="text"],
+        input[type="url"],
+        input[type="email"],
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            color: #eee;
+            font-size: 1em;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="url"]:focus,
+        input[type="email"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            background: rgba(255,255,255,0.15);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .help-text {
+            font-size: 0.85em;
+            color: #aaa;
+            margin-top: 5px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            background: rgba(255,255,255,0.05);
+            padding: 10px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .checkbox-label:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,107,107,0.3);
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            margin-right: 8px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .time-input {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .time-input input {
+            width: 100px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8787 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 30px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255,107,107,0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #6495ed;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #ff6b6b;
+        }
+
+        .success-message {
+            display: none;
+            background: rgba(76, 175, 80, 0.2);
+            border: 2px solid rgba(76, 175, 80, 0.5);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+            color: #4caf50;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .checkbox-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍪 매장 등록 신청</h1>
+            <p class="subtitle">두바이 쿠키 매장 정보를 제출해주세요</p>
+        </header>
+
+        <div class="info-box">
+            <h3>📋 등록 안내</h3>
+            <ul>
+                <li><strong>매장명만 필수</strong>이고, 나머지는 모두 선택사항입니다</li>
+                <li>알고 계신 정보만 입력하셔도 됩니다</li>
+                <li>제출하신 정보는 <strong>검토 후 1~3일 내</strong> 사이트에 반영됩니다</li>
+                <li>정확한 정보 입력을 부탁드립니다</li>
+                <li>문의사항이 있으시면 이메일로 연락주세요</li>
+            </ul>
+        </div>
+
+        <div class="form-container">
+            <form id="shopRegistrationForm">
+                <!-- 매장명 -->
+                <div class="form-group">
+                    <label for="shopName">매장명 <span class="required">*</span></label>
+                    <input type="text" id="shopName" name="shopName" required placeholder="예: 달콤베이커리">
+                    <div class="help-text">필수 입력 항목입니다</div>
+                </div>
+
+                <!-- 링크 정보 -->
+                <div class="form-group">
+                    <label for="deliverySite">택배 사이트 URL <span class="optional">(선택)</span></label>
+                    <input type="url" id="deliverySite" name="deliverySite" placeholder="https://smartstore.naver.com/...">
+                </div>
+
+                <div class="form-group">
+                    <label for="instagram">인스타그램 URL <span class="optional">(선택)</span></label>
+                    <input type="url" id="instagram" name="instagram" placeholder="https://instagram.com/...">
+                </div>
+
+                <div class="form-group">
+                    <label for="naverPlace">네이버 플레이스 URL <span class="optional">(선택)</span></label>
+                    <input type="url" id="naverPlace" name="naverPlace" placeholder="https://map.naver.com/...">
+                </div>
+
+                <!-- 택배 일정 -->
+                <div class="form-group">
+                    <label>택배 일정 요일 <span class="optional">(선택, 해당하는 요일 모두 선택)</span></label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="deliveryDays" value="월요일"> 월요일
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="deliveryDays" value="화요일"> 화요일
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="deliveryDays" value="수요일"> 수요일
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="deliveryDays" value="목요일"> 목요일
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="deliveryDays" value="금요일"> 금요일
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="deliveryDays" value="토요일"> 토요일
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="deliveryDays" value="일요일"> 일요일
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="deliveryTime">택배 오픈 시간 <span class="optional">(선택)</span></label>
+                    <div class="time-input">
+                        <input type="text" id="deliveryTime" name="deliveryTime" placeholder="21" maxlength="2">
+                        <span>시</span>
+                    </div>
+                    <div class="help-text">예: 21 (오후 9시)</div>
+                </div>
+
+                <!-- 구매 제한 -->
+                <div class="form-group">
+                    <label for="purchaseLimit">구매 제한 <span class="optional">(선택)</span></label>
+                    <input type="text" id="purchaseLimit" name="purchaseLimit" placeholder="예: 1세트 (6개입) 또는 인당 5개">
+                </div>
+
+                <!-- 가격 -->
+                <div class="form-group">
+                    <label for="price">가격 <span class="optional">(선택)</span></label>
+                    <input type="text" id="price" name="price" placeholder="예: 세트 당 30,000원 (택배비 3,500원) 또는 개당 6,800원">
+                </div>
+
+                <!-- 위치 -->
+                <div class="form-group">
+                    <label for="location">위치 <span class="optional">(선택)</span></label>
+                    <input type="text" id="location" name="location" placeholder="예: 서울 강남구 테헤란로 123">
+                    <div class="help-text">전체 주소를 입력해주시면 더 정확합니다 (도/시/구/동/상세주소)</div>
+                </div>
+
+                <!-- 현장 판매 -->
+                <div class="form-group">
+                    <label>현장 판매 요일 <span class="optional">(선택, 해당하는 요일 모두 선택)</span></label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="pickupDays" value="월요일"> 월요일
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="pickupDays" value="화요일"> 화요일
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="pickupDays" value="수요일"> 수요일
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="pickupDays" value="목요일"> 목요일
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="pickupDays" value="금요일"> 금요일
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="pickupDays" value="토요일"> 토요일
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="pickupDays" value="일요일"> 일요일
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pickupTime">현장 판매 시간 <span class="optional">(선택)</span></label>
+                    <div class="time-input">
+                        <input type="text" id="pickupTime" name="pickupTime" placeholder="10" maxlength="2">
+                        <span>시</span>
+                    </div>
+                    <div class="help-text">예: 10 (오전 10시)</div>
+                </div>
+
+                <!-- 추가 정보 -->
+                <div class="form-group">
+                    <label for="additionalInfo">추가 정보 <span class="optional">(선택)</span></label>
+                    <textarea id="additionalInfo" name="additionalInfo" placeholder="기타 알려주고 싶은 정보가 있다면 자유롭게 작성해주세요"></textarea>
+                </div>
+
+                <!-- 제출자 이메일 -->
+                <div class="form-group">
+                    <label for="email">연락 가능한 이메일 <span class="optional">(선택)</span></label>
+                    <input type="email" id="email" name="email" placeholder="example@email.com">
+                    <div class="help-text">확인이 필요한 경우 연락드릴 수 있습니다</div>
+                </div>
+
+                <button type="submit" class="submit-btn">📝 등록 신청하기</button>
+            </form>
+
+            <div id="successMessage" class="success-message">
+                <h3>✅ 등록 신청이 완료되었습니다!</h3>
+                <p>제출하신 정보는 검토 후 1~3일 내에 사이트에 반영됩니다.</p>
+                <p>감사합니다! 🍪</p>
+            </div>
+
+            <div style="text-align: center;">
+                <a href="index.html" class="back-link">← 메인 페이지로 돌아가기</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('shopRegistrationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 매장명 필수 확인
+            const shopName = document.getElementById('shopName').value.trim();
+            if (!shopName) {
+                alert('매장명은 필수 입력 항목입니다.');
+                document.getElementById('shopName').focus();
+                return;
+            }
+            
+            // 폼 데이터 수집
+            const formData = {
+                shopName: shopName,
+                deliverySite: document.getElementById('deliverySite').value,
+                instagram: document.getElementById('instagram').value,
+                naverPlace: document.getElementById('naverPlace').value,
+                deliveryDays: Array.from(document.querySelectorAll('input[name="deliveryDays"]:checked')).map(cb => cb.value),
+                deliveryTime: document.getElementById('deliveryTime').value,
+                purchaseLimit: document.getElementById('purchaseLimit').value,
+                price: document.getElementById('price').value,
+                location: document.getElementById('location').value,
+                pickupDays: Array.from(document.querySelectorAll('input[name="pickupDays"]:checked')).map(cb => cb.value),
+                pickupTime: document.getElementById('pickupTime').value,
+                additionalInfo: document.getElementById('additionalInfo').value,
+                email: document.getElementById('email').value,
+                submittedAt: new Date().toLocaleString('ko-KR')
+            };
+
+            // 데이터를 보기 좋게 포맷
+            let formattedData = `
+=== 새 매장 등록 신청 ===
+제출 시간: ${formData.submittedAt}
+
+📍 매장명: ${formData.shopName}
+
+🔗 링크:
+- 택배 사이트: ${formData.deliverySite || '(정보 없음)'}
+- 인스타그램: ${formData.instagram || '(정보 없음)'}
+- 네이버 플레이스: ${formData.naverPlace || '(정보 없음)'}
+
+📅 택배 일정:
+- 요일: ${formData.deliveryDays.length > 0 ? formData.deliveryDays.join(', ') : '미정'}
+- 시간: ${formData.deliveryTime ? formData.deliveryTime + '시' : '미정'}
+
+📦 구매 제한: ${formData.purchaseLimit || '정보 없음'}
+
+💰 가격: ${formData.price || '정보 없음'}
+
+📍 위치: ${formData.location || '정보 없음'}
+
+🏪 현장 판매:
+- 요일: ${formData.pickupDays.length > 0 ? formData.pickupDays.join(', ') : '일정 없음'}
+- 시간: ${formData.pickupTime ? formData.pickupTime + '시' : '미정'}
+
+📝 추가 정보:
+${formData.additionalInfo || '(없음)'}
+
+📧 연락처: ${formData.email || '(없음)'}
+            `;
+
+            // 콘솔에 출력 (실제로는 서버로 전송해야 함)
+            console.log('제출된 데이터:', formData);
+            console.log(formattedData);
+
+            // 실제 서비스에서는 여기서 서버로 데이터 전송
+            // fetch('/api/submit-shop', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify(formData)
+            // });
+
+            // localStorage에 저장 (임시 방법)
+            const submissions = JSON.parse(localStorage.getItem('shopSubmissions') || '[]');
+            submissions.push(formData);
+            localStorage.setItem('shopSubmissions', JSON.stringify(submissions));
+
+            // 성공 메시지 표시
+            document.getElementById('shopRegistrationForm').style.display = 'none';
+            document.getElementById('successMessage').classList.add('show');
+
+            // 3초 후 메인 페이지로 이동
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 3000);
+        });
+
+        // 숫자만 입력 가능하도록
+        document.getElementById('deliveryTime').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+        document.getElementById('pickupTime').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    </script>
+</body>
+</html>
