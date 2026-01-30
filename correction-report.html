@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>수정 사항 신고 | 두바이 쫀득쿠키 택배 매장 모음</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #eee;
+        }
+        .form-container {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .form-group { margin-bottom: 25px; }
+        label {
+            display: block;
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .required { color: #ff6b6b; margin-left: 5px; }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            color: #eee;
+            font-size: 1em;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #ff6b6b;
+        }
+        textarea { min-height: 150px; }
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8787 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #6495ed;
+            text-decoration: none;
+        }
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            background: rgba(76, 175, 80, 0.2);
+            border-radius: 10px;
+            color: #4caf50;
+        }
+        .success-message.show { display: block; }
+    </style>
+</head>
+<body>
+    <div class="container" style="max-width: 800px; margin: 40px auto;">
+        <header style="text-align: center; margin-bottom: 30px;">
+            <h1>📝 수정 사항 신고</h1>
+            <p style="color: #aaa;">매장 정보에 대한 수정 사항을 알려주세요.</p>
+        </header>
+
+        <div class="form-container">
+            <form id="correctionForm">
+                <div class="form-group">
+                    <label for="shopName">매장 이름 <span class="required">*</span></label>
+                    <input type="text" id="shopName" name="shopName" required placeholder="수정할 매장의 이름을 정확하게 입력해주세요.">
+                </div>
+
+                <div class="form-group">
+                    <label for="correctionDetails">수정 내용 <span class="required">*</span></label>
+                    <textarea id="correctionDetails" name="correctionDetails" required placeholder="예시)&#10;- 택배 일정이 매주 수요일 20시로 변경되었습니다.&#10;- 현장 판매는 이제 하지 않습니다.&#10;- 가격이 32,000원으로 인상되었습니다."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">연락 가능한 이메일 (선택)</label>
+                    <input type="email" id="email" name="email" placeholder="추가 확인이 필요한 경우 연락드릴 수 있습니다.">
+                </div>
+
+                <button type="submit" class="submit-btn">신고 제출하기</button>
+            </form>
+
+            <div id="successMessage" class="success-message">
+                <h3>✅ 신고가 접수되었습니다!</h3>
+                <p>소중한 정보 감사드립니다. 검토 후 빠르게 반영하겠습니다.</p>
+            </div>
+
+            <div style="text-align: center;">
+                <a href="index.html" class="back-link">← 메인 페이지로 돌아가기</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('correctionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const shopName = document.getElementById('shopName').value.trim();
+            const correctionDetails = document.getElementById('correctionDetails').value.trim();
+
+            if (!shopName || !correctionDetails) {
+                alert('매장 이름과 수정 내용은 필수 입력 항목입니다.');
+                return;
+            }
+
+            const formData = {
+                shopName: shopName,
+                correctionDetails: correctionDetails,
+                email: document.getElementById('email').value,
+                submittedAt: new Date().toLocaleString('ko-KR')
+            };
+            
+            // This is for demonstration. In a real application, you would send this data to a server.
+            console.log('Correction Report Submitted:', formData);
+
+            // You can use a service like Formspree, Netlify Forms, or a custom backend to receive the data.
+            // For now, we'll just show a success message.
+            
+            document.getElementById('correctionForm').style.display = 'none';
+            document.getElementById('successMessage').classList.add('show');
+            
+            // Redirect back to the main page after 3 seconds
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
