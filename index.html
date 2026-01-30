@@ -50,12 +50,9 @@
 
         .cookie-logo {
             width: 100px;
-            height: 100px;
+            height: auto; /* Maintain aspect ratio */
             margin: 0 auto 20px;
             display: block;
-            /* border-radius: 50%; */ /* Removed to make it square */
-            /* box-shadow: 0 5px 20px rgba(139, 69, 19, 0.2); */ /* Removed for blending */
-            object-fit: cover;
         }
 
         h1 {
@@ -269,7 +266,7 @@
 <body>
     <div class="container">
         <header>
-            <img src="cookie-logo.jpg" alt="두바이 쿠키" class="cookie-logo">
+            <img src="cookie-logo.png" alt="두바이 쿠키" class="cookie-logo">
             <h1>두바이 쫀득쿠키 택배 매장</h1>
             <p class="subtitle">전국 두바이 쿠키 택배 주문 정보 한눈에 보기</p>
         </header>
