@@ -235,6 +235,37 @@
             border: 1px solid rgba(210, 105, 30, 0.3);
         }
 
+        .action-buttons-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .action-btn {
+            display: inline-block;
+            padding: 18px 30px;
+            min-width: 260px; /* Adjust as needed */
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1.2em;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        #register-btn {
+            background: linear-gradient(135deg, #d2691e 0%, #cd853f 100%);
+            box-shadow: 0 5px 20px rgba(139, 69, 19, 0.3);
+        }
+
+        #report-btn {
+            background: linear-gradient(135deg, #4682B4 0%, #6A5ACD 100%);
+            box-shadow: 0 5px 20px rgba(70, 130, 180, 0.3);
+        }
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 2em;
@@ -259,6 +290,16 @@
 
             .info-label {
                 margin-bottom: 5px;
+            }
+
+            .action-buttons-container {
+                flex-direction: column;
+                gap: 15px;
+                width: 100%;
+            }
+            .action-btn {
+                min-width: 0;
+                width: 100%;
             }
         }
     </style>
@@ -881,14 +922,16 @@
         </div>
 
         <!-- 매장 등록 및 수정 사항 신고 섹션 -->
-        <div style="text-align: center; margin: 50px 0 30px 0;">
-            <a href="shop-registration.html" style="display: inline-block; padding: 18px 50px; background: linear-gradient(135deg, #d2691e 0%, #cd853f 100%); color: white; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 1.2em; transition: all 0.3s ease; box-shadow: 0 5px 20px rgba(139, 69, 19, 0.3); margin-right: 15px;">
-                ➕ 매장 등록하기
-            </a>
-            <a href="correction-report.html" style="display: inline-block; padding: 18px 50px; background: linear-gradient(135deg, #4682B4 0%, #6A5ACD 100%); color: white; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 1.2em; transition: all 0.3s ease; box-shadow: 0 5px 20px rgba(70, 130, 180, 0.3);">
-                📝 수정 사항 신고하기
-            </a>
-            <p style="color: #6b4423; margin-top: 15px; font-size: 0.9em;">새로운 매장 정보를 등록하거나, 잘못된 정보를 수정 요청해주세요!</p>
+        <div style="margin: 50px 0 30px 0;">
+            <div class="action-buttons-container">
+                <a href="shop-registration.html" class="action-btn" id="register-btn">
+                    ➕ 매장 등록하기
+                </a>
+                <a href="correction-report.html" class="action-btn" id="report-btn">
+                    📝 수정 사항 신고하기
+                </a>
+            </div>
+            <p style="text-align: center; color: #6b4423; margin-top: 15px; font-size: 0.9em;">새로운 매장 정보를 등록하거나, 잘못된 정보를 수정 요청해주세요!</p>
         </div>    </div>
 
     <!-- 푸터 추가 (AdSense 승인에 필요) -->
