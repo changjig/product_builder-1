@@ -320,7 +320,12 @@
         <header>
             <img src="cookie-logo.png" alt="두바이 쿠키" class="cookie-logo">
             <h1>두바이 쫀득쿠키 택배 매장</h1>
-            <p class="subtitle">전국 두바이 쿠키 택배 주문 정보 한눈에 보기</p>
+            <p class="subtitle">전국 '두바이 쫀득쿠키' 판매점의 택배 및 현장 판매 정보를 한 곳에서 확인하세요!</p>
+            <p style="max-width: 800px; margin: 20px auto 0; line-height: 1.7; color: #4a3020;">
+                최근 SNS에서 화제가 되고 있는 일명 '두바이 쿠키'는 꾸덕하고 쫀득한 식감과 깊은 풍미로 많은 사랑을 받고 있습니다. 
+                하지만 인기가 많은 만큼 구매하기가 쉽지 않죠. 저희는 전국의 다양한 두바이 쿠키 판매점 정보를 모아, 여러분이 더 쉽게 쿠키를 맛볼 수 있도록 돕고자 합니다. 
+                이곳에서 각 매장의 최신 택배 일정과 현장 판매 정보를 확인하고, 달콤한 쿠키와 함께하는 행복한 순간을 놓치지 마세요!
+            </p>
         </header>
 
         <!-- 안내 사항 -->
@@ -358,21 +363,6 @@
                     <option value="제주">제주</option>
                 </select>
             </div>
-        </div>
-
-        <!-- AdSense ad unit -->
-        <div style="margin: 30px 0; text-align: center;">
-            <p style="margin-bottom: 10px; color: #8b7355; font-size: 0.9em;">- 광고 -</p>
-            <!-- 애드센스 슬롯 ID를 "0000000000" 대신 실제 값으로 교체해주세요 -->
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-client="ca-pub-3539029219114204"
-                 data-ad-slot="0000000000"
-                 data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
-            <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
         </div>
 
         <div class="shop-list" id="shopList">
@@ -967,6 +957,7 @@
             <p style="font-size: 0.9em;">전국 두바이 쿠키 정보를 한곳에서 확인하세요</p>
         </div>
         <div style="margin: 20px 0;">
+            <a href="about.html" style="color: #1e90ff; text-decoration: none; margin: 0 15px;">소개</a>
             <a href="mailto:contact@example.com" style="color: #1e90ff; text-decoration: none; margin: 0 15px;">문의하기</a>
             <a href="privacy-policy.html" style="color: #1e90ff; text-decoration: none; margin: 0 15px;">개인정보처리방침</a>
             <a href="shop-registration.html" style="color: #1e90ff; text-decoration: none; margin: 0 15px;">매장 등록 신청</a>
@@ -1234,30 +1225,9 @@
 
             // DOM 업데이트
             container.innerHTML = '';
-            sortedCards.forEach((card, index) => {
+            sortedCards.forEach(card => {
                 card.style.display = 'block';
                 container.appendChild(card);
-
-                // Add ad unit every 4 cards
-                if ((index + 1) % 4 === 0) {
-                    const adContainer = document.createElement('div');
-                    adContainer.style.margin = '30px 0';
-                    adContainer.style.textAlign = 'center';
-                    adContainer.innerHTML = `
-                        <p style="margin-bottom: 10px; color: #8b7355; font-size: 0.9em;">- 광고 -</p>
-                        <!-- 애드센스 슬롯 ID를 "0000000000" 대신 실제 값으로 교체해주세요 -->
-                        <ins class="adsbygoogle"
-                             style="display:block"
-                             data-ad-client="ca-pub-3539029219114204"
-                             data-ad-slot="0000000000"
-                             data-ad-format="auto"
-                             data-full-width-responsive="true"></ins>
-                    `;
-                    container.appendChild(adContainer);
-                    const adScript = document.createElement('script');
-                    adScript.innerHTML = '(adsbygoogle = window.adsbygoogle || []).push({});';
-                    container.appendChild(adScript);
-                }
             });
             hiddenCards.forEach(card => {
                 card.style.display = 'none';
