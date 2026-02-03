@@ -20,7 +20,9 @@
     <!-- Google Analytics 코드는 여기에 삽입 -->
     
     <!-- Google AdSense (나중에 추가) -->
-    <!-- AdSense 코드는 여기에 삽입 -->
+    <!-- 사용자의 실제 애드센스 게시자 ID로 "ca-pub-0000000000000000"을 교체해주세요 -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0000000000000000"
+     crossorigin="anonymous"></script>
     
     <style>
         * {
@@ -355,6 +357,21 @@
                     <option value="제주">제주</option>
                 </select>
             </div>
+        </div>
+
+        <!-- AdSense ad unit -->
+        <div style="margin: 30px 0; text-align: center;">
+            <p style="margin-bottom: 10px; color: #8b7355; font-size: 0.9em;">- 광고 -</p>
+            <!-- 애드센스 슬롯 ID를 "0000000000" 대신 실제 값으로 교체해주세요 -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-0000000000000000"
+                 data-ad-slot="0000000000"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
         </div>
 
         <div class="shop-list" id="shopList">
@@ -964,6 +981,7 @@
         const today = new Date();
         const todayDay = today.getDay(); // 0(일) ~ 6(토)
         const currentHour = today.getHours(); // 0 ~ 23
+        const currentMinute = today.getMinutes(); // 0 ~ 59
 
         // 요일 이름
         const dayNames = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
@@ -992,14 +1010,14 @@
                     if (scheduleTime !== null) {
                         // 아직 시간이 안 지났으면 오늘
                         if (currentHour < scheduleTime) {
-                            const minutesUntil = (scheduleTime - currentHour) * 60;
+                            const minutesUntil = (scheduleTime - currentHour) * 60 - currentMinute;
                             if (minutesUntil < minMinutes) {
                                 minMinutes = minutesUntil;
                                 nearestDay = targetDay;
                             }
                         } else {
                             // 시간이 지났으면 다음 주
-                            const minutesUntil = (7 * 24 * 60) + ((scheduleTime - currentHour) * 60);
+                            const minutesUntil = (7 * 24 * 60) + ((scheduleTime - currentHour) * 60) - currentMinute;
                             if (minutesUntil < minMinutes) {
                                 minMinutes = minutesUntil;
                                 nearestDay = targetDay;
@@ -1016,7 +1034,7 @@
                     // 다른 요일인 경우
                     let minutesUntil = daysUntil * 24 * 60;
                     if (scheduleTime !== null) {
-                        minutesUntil += (scheduleTime - currentHour) * 60;
+                        minutesUntil += (scheduleTime - currentHour) * 60 - currentMinute;
                     }
                     
                     if (minutesUntil < minMinutes) {
@@ -1215,9 +1233,30 @@
 
             // DOM 업데이트
             container.innerHTML = '';
-            sortedCards.forEach(card => {
+            sortedCards.forEach((card, index) => {
                 card.style.display = 'block';
                 container.appendChild(card);
+
+                // Add ad unit every 4 cards
+                if ((index + 1) % 4 === 0) {
+                    const adContainer = document.createElement('div');
+                    adContainer.style.margin = '30px 0';
+                    adContainer.style.textAlign = 'center';
+                    adContainer.innerHTML = `
+                        <p style="margin-bottom: 10px; color: #8b7355; font-size: 0.9em;">- 광고 -</p>
+                        <!-- 애드센스 슬롯 ID를 "0000000000" 대신 실제 값으로 교체해주세요 -->
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-pub-0000000000000000"
+                             data-ad-slot="0000000000"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true"></ins>
+                    `;
+                    container.appendChild(adContainer);
+                    const adScript = document.createElement('script');
+                    adScript.innerHTML = '(adsbygoogle = window.adsbygoogle || []).push({});';
+                    container.appendChild(adScript);
+                }
             });
             hiddenCards.forEach(card => {
                 card.style.display = 'none';
