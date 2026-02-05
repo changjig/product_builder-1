@@ -28,16 +28,13 @@ This project aims to optimize a website for AI search (GEO) based on provided ar
 - **`index.html`:**
     - Corrected the `div.shop-links` for "초심 베이커리" to include a single "📦 택배 사이트" link (https://smartstore.naver.com/chosimbakery), a single "📷 인스타" link (https://www.instagram.com/chosim.bakery/), and the existing "🗺️ 네이버 플레이스" link.
 
-## Plan for Current Request
+## Continuous Deployment Preference
+The user has requested that all future modifications be immediately committed and pushed to the remote GitHub repository: `https://github.com/changjig/product_builder-1`, to the `main` branch.
 
-The user wants the changes to be deployed directly to the GitHub repository: `https://github.com/changjig/product_builder-1`.
-
-**Steps:**
-1.  **Confirm with User:** Explain that direct pushes to a remote repository require explicit confirmation.
-2.  **Request Commit Message:** Ask the user for a commit message.
-3.  **Perform Git Operations (if approved):**
-    - `git add .`
-    - `git commit -m "User provided commit message"`
-    - `git push origin main` (assuming `main` is the target branch, will confirm if needed)
-
-**Note:** The agent will not proceed with Git operations without explicit user approval and a commit message.
+## Plan for Future Requests
+For all subsequent tasks that involve code modification, the agent will:
+1.  Implement the requested changes.
+2.  Stage all modified and newly created files.
+3.  **Propose a commit message for user approval.**
+4.  Commit the staged changes.
+5.  Push the commit to `origin main`.
