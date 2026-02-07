@@ -1359,295 +1359,580 @@
         </div>
     </footer>
 
-    <script>
-        // 현재 날짜와 시간 (실시간)
-        const today = new Date();
-        const todayDay = today.getDay(); // 0(일) ~ 6(토)
-        const currentHour = today.getHours(); // 0 ~ 23
-        const currentMinute = today.getMinutes(); // 0 ~ 59
+        <script>
 
-        // 요일 이름
-        const dayNames = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
-        const dayNamesShort = ['일', '월', '화', '수', '목', '금', '토'];
+            // Global variable to store original shop cards
 
-        // 시간 추출 (예: "21시" → 21, "11시 30분" → 11)
-        function extractTimeFromText(text) {
-            const timeMatch = text.match(/(\d+)시/);
-            return timeMatch ? parseInt(timeMatch[1]) : null;
-        }
+            let originalShopCards = [];
 
-        // 다음 해당 요일+시간까지 남은 분 계산
-        function getMinutesUntil(targetDays, scheduleTime) {
-            if (!targetDays || targetDays.length === 0) return 999999;
-            
+    
 
-            
-            let minMinutes = 999999;
-            let nearestDay = null;
-            
-            for (let targetDay of targetDays) {
-                // 요일까지의 일수 계산
-                let daysUntil = (targetDay - todayDay + 7) % 7;
+            // 현재 날짜와 시간 (실시간)
+
+            const today = new Date();
+
+            const todayDay = today.getDay(); // 0(일) ~ 6(토)
+
+            const currentHour = today.getHours(); // 0 ~ 23
+
+            const currentMinute = today.getMinutes(); // 0 ~ 59
+
+    
+
+            // 요일 이름
+
+            const dayNames = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+
+            const dayNamesShort = ['일', '월', '화', '수', '목', '금', '토'];
+
+    
+
+            // 시간 추출 (예: "21시" → 21, "11시 30분" → 11)
+
+            function extractTimeFromText(text) {
+
+                const timeMatch = text.match(/(\d+)시/);
+
+                return timeMatch ? parseInt(timeMatch[1]) : null;
+
+            }
+
+    
+
+            // 다음 해당 요일+시간까지 남은 분 계산
+
+            function getMinutesUntil(targetDays, scheduleTime) {
+
+                if (!targetDays || targetDays.length === 0) return 999999;
+
                 
-                // 오늘인 경우
-                if (daysUntil === 0) {
-                    // 시간이 있으면 시간 비교
-                    if (scheduleTime !== null) {
-                        // 아직 시간이 안 지났으면 오늘
-                        if (currentHour < scheduleTime) {
-                            const minutesUntil = (scheduleTime - currentHour) * 60 - currentMinute;
-                            if (minutesUntil < minMinutes) {
-                                minMinutes = minutesUntil;
-                                nearestDay = targetDay;
+
+                let minMinutes = 999999;
+
+                let nearestDay = null;
+
+                
+
+                for (let targetDay of targetDays) {
+
+                    // 요일까지의 일수 계산
+
+                    let daysUntil = (targetDay - todayDay + 7) % 7;
+
+                    
+
+                    // 오늘인 경우
+
+                    if (daysUntil === 0) {
+
+                        // 시간이 있으면 시간 비교
+
+                        if (scheduleTime !== null) {
+
+                            // 아직 시간이 안 지났으면 오늘
+
+                            if (currentHour < scheduleTime) {
+
+                                const minutesUntil = (scheduleTime - currentHour) * 60 - currentMinute;
+
+                                if (minutesUntil < minMinutes) {
+
+                                    minMinutes = minutesUntil;
+
+                                    nearestDay = targetDay;
+
+                                }
+
+                            } else {
+
+                                // 시간이 지났으면 다음 주
+
+                                const minutesUntil = (7 * 24 * 60) + ((scheduleTime - currentHour) * 60) - currentMinute;
+
+                                if (minutesUntil < minMinutes) {
+
+                                    minMinutes = minutesUntil;
+
+                                    nearestDay = targetDay;
+
+                                }
+
                             }
+
                         } else {
-                            // 시간이 지났으면 다음 주
-                            const minutesUntil = (7 * 24 * 60) + ((scheduleTime - currentHour) * 60) - currentMinute;
-                            if (minutesUntil < minMinutes) {
-                                minMinutes = minutesUntil;
+
+                            // 시간 정보 없으면 오늘로 간주
+
+                            if (0 < minMinutes) {
+
+                                minMinutes = 0;
+
                                 nearestDay = targetDay;
+
                             }
+
                         }
+
                     } else {
-                        // 시간 정보 없으면 오늘로 간주
-                        if (0 < minMinutes) {
-                            minMinutes = 0;
+
+                        // 다른 요일인 경우
+
+                        let minutesUntil = daysUntil * 24 * 60;
+
+                        if (scheduleTime !== null) {
+
+                            minutesUntil += (scheduleTime - currentHour) * 60 - currentMinute;
+
+                        }
+
+                        
+
+                        if (minutesUntil < minMinutes) {
+
+                            minMinutes = minutesUntil;
+
                             nearestDay = targetDay;
+
                         }
+
                     }
-                } else {
-                    // 다른 요일인 경우
-                    let minutesUntil = daysUntil * 24 * 60;
-                    if (scheduleTime !== null) {
-                        minutesUntil += (scheduleTime - currentHour) * 60 - currentMinute;
-                    }
-                    
-                    if (minutesUntil < minMinutes) {
-                        minMinutes = minutesUntil;
-                        nearestDay = targetDay;
-                    }
+
                 }
-            }
-            
-            return { minutes: minMinutes, dayOfWeek: nearestDay };
-        }
 
-        // 주소로 지역 판단
-        function getRegionFromAddress(address) {
-            if (address.includes('서울')) return '서울';
-            if (address.includes('인천')) return '인천';
-            if (address.includes('경기') || address.includes('의정부') || address.includes('안양') || address.includes('용인')) return '경기';
-            if (address.includes('강원')) return '강원';
-            if (address.includes('부산') || address.includes('대구') || address.includes('울산') || 
-                address.includes('경상') || address.includes('경북') || address.includes('경남')) return '경상';
-            if (address.includes('광주') || address.includes('전라') || address.includes('전북') || 
-                address.includes('전남') || address.includes('순천')) return '전라';
-            if (address.includes('제주')) return '제주';
-            return '기타';
-        }
-
-        // 일정 텍스트에서 요일 추출
-        function extractDaysFromSchedule(scheduleText) {
-            const days = [];
-            
-            // "매일" 체크
-            if (scheduleText.includes('매일')) {
-                return [0, 1, 2, 3, 4, 5, 6]; // 모든 요일
-            }
-            
-            if (scheduleText.includes('일요일') || scheduleText.includes('매주 일')) days.push(0);
-            if (scheduleText.includes('월요일')) days.push(1);
-            if (scheduleText.includes('화요일')) days.push(2);
-            if (scheduleText.includes('수요일')) days.push(3);
-            if (scheduleText.includes('목요일')) days.push(4);
-            if (scheduleText.includes('금요일')) days.push(5);
-            if (scheduleText.includes('토요일')) days.push(6);
-            
-            return days;
-        }
-
-        // 배열 랜덤 셔플
-        function shuffleArray(array) {
-            const shuffled = [...array];
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-            return shuffled;
-        }
-
-        // 일정 배지 업데이트
-        function updateScheduleBadges() {
-            const shopCards = document.querySelectorAll('.shop-card');
-            
-            shopCards.forEach(card => {
-                const infoRows = card.querySelectorAll('.info-row');
                 
-                // 각 행을 순서대로 처리
-                infoRows.forEach((row, index) => {
-                    const label = row.querySelector('.info-label');
-                    const valueElement = row.querySelector('.info-value');
-                    
-                    if (!label || !valueElement) return;
-                    
-                    // 위치 정보 (주소에서 지역 추출)
-                    if (label.textContent.includes('📍')) {
-                        const address = valueElement.textContent;
-                        const region = getRegionFromAddress(address);
-                        card.dataset.region = region;
-                    }
-                    
-                    // 첫 번째 정보: 택배 일정 (index 0)
-                    if (index === 0 && label.textContent.includes('📅')) {
-                        const scheduleText = valueElement.textContent;
-                        const days = extractDaysFromSchedule(scheduleText);
-                        const scheduleTime = extractTimeFromText(scheduleText);
-                        const result = getMinutesUntil(days, scheduleTime);
-                        
-                        // 분을 일수로 변환 (표시용)
-                        const daysUntil = Math.floor(result.minutes / (24 * 60));
-                        card.dataset.deliveryMinutes = result.minutes;
-                        card.dataset.deliveryDay = daysUntil;
 
-                        // 상시 판매 여부 설정
-                        card.dataset.alwaysAvailable = scheduleText.includes('상시') ? 'true' : 'false';
-                        
-                        // 배지 업데이트
-                        let badge = row.querySelector('.badge');
-                        if (badge && result.minutes < 999999 && result.dayOfWeek !== null) {
-                            const hoursUntil = Math.floor(result.minutes / 60);
-                            
-                            if (hoursUntil < 1) {
-                                // 1시간 미만
-                                badge.textContent = `임박`;
-                            } else if (hoursUntil < 24) {
-                                // 24시간 이내 (1시간 이상)
-                                badge.textContent = `${hoursUntil}시간 후`;
-                            } else {
-                                // 24시간 이후
-                                const daysUntil = Math.floor(result.minutes / (24 * 60));
-                                if (daysUntil === 1) {
-                                    badge.textContent = `내일 (${dayNamesShort[result.dayOfWeek]})`;
-                                } else {
-                                    badge.textContent = `${daysUntil}일 후 (${dayNamesShort[result.dayOfWeek]})`;
-                                }
-                            }
-                        } else if (badge && result.minutes === 999999) {
-                            badge.remove();
-                        }
-                    }
-                    
-                    // 다섯 번째 정보: 현장 판매 (index 4)
-                    if (index === 4 && label.textContent.includes('🏪')) {
-                        const scheduleText = valueElement.textContent;
-                        const days = extractDaysFromSchedule(scheduleText);
-                        const scheduleTime = extractTimeFromText(scheduleText);
-                        const result = getMinutesUntil(days, scheduleTime);
-                        
-                        // 분을 일수로 변환 (표시용)
-                        const daysUntil = Math.floor(result.minutes / (24 * 60));
-                        card.dataset.pickupMinutes = result.minutes;
-                        card.dataset.pickupDay = daysUntil;
-                        
-                        // 배지 업데이트
-                        let badge = row.querySelector('.badge');
-                        if (badge && result.minutes < 999999 && result.dayOfWeek !== null) {
-                            const hoursUntil = Math.floor(result.minutes / 60);
-                            
-                            if (hoursUntil < 1) {
-                                // 1시간 미만
-                                badge.textContent = `임박`;
-                            } else if (hoursUntil < 24) {
-                                // 24시간 이내 (1시간 이상)
-                                badge.textContent = `${hoursUntil}시간 후`;
-                            } else {
-                                // 24시간 이후
-                                const daysUntil = Math.floor(result.minutes / (24 * 60));
-                                if (daysUntil === 1) {
-                                    badge.textContent = `내일 (${dayNamesShort[result.dayOfWeek]})`;
-                                } else {
-                                    badge.textContent = `${daysUntil}일 후 (${dayNamesShort[result.dayOfWeek]})`;
-                                }
-                            }
-                        } else if (badge && result.minutes === 999999) {
-                            badge.remove();
-                        }
-                    }
-                });
-            });
-        }
+                return { minutes: minMinutes, dayOfWeek: nearestDay };
 
-        // 필터 적용
-        function applyFilters() {
-            const activeFilter = document.querySelector('.filter-btn.active');
-            const filter = activeFilter ? activeFilter.dataset.filter : 'all';
-            const regionSelect = document.getElementById('regionSelect');
-            const selectedRegion = regionSelect.value;
-            const container = document.getElementById('shopList');
-            const allShopCards = Array.from(document.querySelectorAll('.shop-card'));
-
-            // 1. 모든 카드를 일단 숨김 처리
-            allShopCards.forEach(card => {
-                card.style.display = 'none';
-            });
-
-            // 2. 표시할 카드들을 필터링 (지역 필터 우선)
-            let cardsToDisplay = allShopCards.filter(card => {
-                const cardRegion = card.dataset.region;
-                return selectedRegion === 'all' || cardRegion === selectedRegion;
-            });
-
-            // 3. '상시 판매' 탭인 경우에만 추가 필터링 적용
-            if (filter === 'always-available') {
-                cardsToDisplay = cardsToDisplay.filter(card => card.dataset.alwaysAvailable === 'true');
             }
 
-            // 4. 필터에 따른 정렬 적용
-            if (filter === 'all') {
-                cardsToDisplay = shuffleArray(cardsToDisplay);
-            } else if (filter === 'delivery-soon') {
-                cardsToDisplay.sort((a, b) => {
-                    const aMinutes = parseInt(a.dataset.deliveryMinutes) || 999999;
-                    const bMinutes = parseInt(b.dataset.deliveryMinutes) || 999999;
-                    return aMinutes - bMinutes;
-                });
-            } else if (filter === 'pickup-soon') {
-                cardsToDisplay.sort((a, b) => {
-                    const aMinutes = parseInt(a.dataset.pickupMinutes) || 999999;
-                    const bMinutes = parseInt(b.dataset.pickupMinutes) || 999999;
-                    return aMinutes - bMinutes;
-                });
+    
+
+            // 주소로 지역 판단
+
+            function getRegionFromAddress(address) {
+
+                if (address.includes('서울')) return '서울';
+
+                if (address.includes('인천')) return '인천';
+
+                if (address.includes('경기') || address.includes('의정부') || address.includes('안양') || address.includes('용인')) return '경기';
+
+                if (address.includes('강원')) return '강원';
+
+                if (address.includes('부산') || address.includes('대구') || address.includes('울산') || 
+
+                    address.includes('경상') || address.includes('경북') || address.includes('경남')) return '경상';
+
+                if (address.includes('광주') || address.includes('전라') || address.includes('전북') || 
+
+                    address.includes('전남') || address.includes('순천')) return '전라';
+
+                if (address.includes('제주')) return '제주';
+
+                return '기타';
+
             }
 
-            // 5. 컨테이너를 비우고, 필터링 및 정렬된 카드들을 다시 추가
-            container.innerHTML = '';
-            cardsToDisplay.forEach(card => {
-                card.style.display = 'block'; // 표시할 카드는 보이게 설정
-                container.appendChild(card);
-            });
-        }
+    
 
-        // 페이지 로드 시 실행
-        document.addEventListener('DOMContentLoaded', () => {
-            updateScheduleBadges();
-            
-            // 초기 랜덤 정렬
-            applyFilters();
+            // 일정 텍스트에서 요일 추출
 
-            // 필터 버튼 이벤트
-            const filterBtns = document.querySelectorAll('.filter-btn');
-            filterBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    filterBtns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    applyFilters();
+            function extractDaysFromSchedule(scheduleText) {
+
+                const days = [];
+
+                
+
+                // "매일" 체크
+
+                if (scheduleText.includes('매일')) {
+
+                    return [0, 1, 2, 3, 4, 5, 6]; // 모든 요일
+
+                }
+
+                
+
+                if (scheduleText.includes('일요일') || scheduleText.includes('매주 일')) days.push(0);
+
+                if (scheduleText.includes('월요일')) days.push(1);
+
+                if (scheduleText.includes('화요일')) days.push(2);
+
+                if (scheduleText.includes('수요일')) days.push(3);
+
+                if (scheduleText.includes('목요일')) days.push(4);
+
+                if (scheduleText.includes('금요일')) days.push(5);
+
+                if (scheduleText.includes('토요일')) days.push(6);
+
+                
+
+                return days;
+
+            }
+
+    
+
+            // 배열 랜덤 셔플
+
+            function shuffleArray(array) {
+
+                const shuffled = [...array];
+
+                for (let i = shuffled.length - 1; i > 0; i--) {
+
+                    const j = Math.floor(Math.random() * (i + 1));
+
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+
+                }
+
+                return shuffled;
+
+            }
+
+    
+
+            // 일정 배지 업데이트 (originalShopCards 사용)
+
+            function updateScheduleBadges() {
+
+                originalShopCards.forEach(card => {
+
+                    const infoRows = card.querySelectorAll('.info-row');
+
+                    
+
+                    infoRows.forEach((row, index) => {
+
+                        const label = row.querySelector('.info-label');
+
+                        const valueElement = row.querySelector('.info-value');
+
+                        
+
+                        if (!label || !valueElement) return;
+
+                        
+
+                        if (label.textContent.includes('📍')) {
+
+                            const address = valueElement.textContent;
+
+                            const region = getRegionFromAddress(address);
+
+                            card.dataset.region = region;
+
+                        }
+
+                        
+
+                        if (index === 0 && label.textContent.includes('📅')) {
+
+                            const scheduleText = valueElement.textContent;
+
+                            const days = extractDaysFromSchedule(scheduleText);
+
+                            const scheduleTime = extractTimeFromText(scheduleText);
+
+                            const result = getMinutesUntil(days, scheduleTime);
+
+                            
+
+                            const daysUntil = Math.floor(result.minutes / (24 * 60));
+
+                            card.dataset.deliveryMinutes = result.minutes;
+
+                            card.dataset.deliveryDay = daysUntil;
+
+    
+
+                            card.dataset.alwaysAvailable = scheduleText.includes('상시') ? 'true' : 'false';
+
+                            
+
+                            let badge = row.querySelector('.badge');
+
+                            if (badge && result.minutes < 999999 && result.dayOfWeek !== null) {
+
+                                const hoursUntil = Math.floor(result.minutes / 60);
+
+                                
+
+                                if (hoursUntil < 1) {
+
+                                    badge.textContent = `임박`;
+
+                                } else if (hoursUntil < 24) {
+
+                                    badge.textContent = `${hoursUntil}시간 후`;
+
+                                } else {
+
+                                    const daysUntil = Math.floor(result.minutes / (24 * 60));
+
+                                    if (daysUntil === 1) {
+
+                                        badge.textContent = `내일 (${dayNamesShort[result.dayOfWeek]})`;
+
+                                    } else {
+
+                                        badge.textContent = `${daysUntil}일 후 (${dayNamesShort[result.dayOfWeek]})`;
+
+                                    }
+
+                                }
+
+                            } else if (badge && result.minutes === 999999) {
+
+                                badge.remove();
+
+                            }
+
+                        }
+
+                        
+
+                        if (index === 4 && label.textContent.includes('🏪')) {
+
+                            const scheduleText = valueElement.textContent;
+
+                            const days = extractDaysFromSchedule(scheduleText);
+
+                            const scheduleTime = extractTimeFromText(scheduleText);
+
+                            const result = getMinutesUntil(days, scheduleTime);
+
+                            
+
+                            const daysUntil = Math.floor(result.minutes / (24 * 60));
+
+                            card.dataset.pickupMinutes = result.minutes;
+
+                            card.dataset.pickupDay = daysUntil;
+
+                            
+
+                            let badge = row.querySelector('.badge');
+
+                            if (badge && result.minutes < 999999 && result.dayOfWeek !== null) {
+
+                                const hoursUntil = Math.floor(result.minutes / 60);
+
+                                
+
+                                if (hoursUntil < 1) {
+
+                                    badge.textContent = `임박`;
+
+                                } else if (hoursUntil < 24) {
+
+                                    badge.textContent = `${hoursUntil}시간 후`;
+
+                                } else {
+
+                                    const daysUntil = Math.floor(result.minutes / (24 * 60));
+
+                                    if (daysUntil === 1) {
+
+                                        badge.textContent = `내일 (${dayNamesShort[result.dayOfWeek]})`;
+
+                                    } else {
+
+                                        badge.textContent = `${daysUntil}일 후 (${dayNamesShort[result.dayOfWeek]})`;
+
+                                    }
+
+                                }
+
+                            } else if (badge && result.minutes === 999999) {
+
+                                badge.remove();
+
+                            }
+
+                        }
+
+                    });
+
                 });
+
+            }
+
+    
+
+            // 필터 적용
+
+            function applyFilters() {
+
+                const activeFilter = document.querySelector('.filter-btn.active');
+
+                const filter = activeFilter ? activeFilter.dataset.filter : 'all';
+
+                const regionSelect = document.getElementById('regionSelect');
+
+                const selectedRegion = regionSelect.value;
+
+                const container = document.getElementById('shopList');
+
+    
+
+                // 1. 모든 카드를 일단 보이게 초기화 (원본 리스트 기준)
+
+                originalShopCards.forEach(card => {
+
+                    card.style.display = 'block';
+
+                });
+
+    
+
+                // 2. 표시할 카드들을 필터링 (지역 필터 우선)
+
+                let cardsToDisplay = originalShopCards.filter(card => {
+
+                    const cardRegion = card.dataset.region;
+
+                    return selectedRegion === 'all' || cardRegion === selectedRegion;
+
+                });
+
+    
+
+                // 3. '상시 판매' 탭인 경우에만 추가 필터링 적용
+
+                if (filter === 'always-available') {
+
+                    cardsToDisplay = cardsToDisplay.filter(card => card.dataset.alwaysAvailable === 'true');
+
+                }
+
+    
+
+                // 4. 필터에 따른 정렬 적용
+
+                if (filter === 'all') {
+
+                    cardsToDisplay = shuffleArray(cardsToDisplay);
+
+                } else if (filter === 'delivery-soon') {
+
+                    cardsToDisplay.sort((a, b) => {
+
+                        const aMinutes = parseInt(a.dataset.deliveryMinutes) || 999999;
+
+                        const bMinutes = parseInt(b.dataset.deliveryMinutes) || 999999;
+
+                        return aMinutes - bMinutes;
+
+                    });
+
+                } else if (filter === 'pickup-soon') {
+
+                    cardsToDisplay.sort((a, b) => {
+
+                        const aMinutes = parseInt(a.dataset.pickupMinutes) || 999999;
+
+                        const bMinutes = parseInt(b.dataset.pickupMinutes) || 999999;
+
+                        return aMinutes - bMinutes;
+
+                    });
+
+                }
+
+    
+
+                // 5. 컨테이너의 자식 요소를 정렬된 순서대로 재배치 및 표시/숨김 처리
+
+                // DOM 조작을 최소화하기 위해 문서 프래그먼트를 사용합니다.
+
+                const fragment = document.createDocumentFragment();
+
+                cardsToDisplay.forEach(card => {
+
+                    card.style.display = 'block'; // 표시할 카드는 보이게 설정
+
+                    fragment.appendChild(card);
+
+                });
+
+    
+
+                // cardsToDisplay에 포함되지 않은 원본 카드들은 숨김 처리
+
+                originalShopCards.forEach(card => {
+
+                    if (!cardsToDisplay.includes(card)) {
+
+                        card.style.display = 'none';
+
+                    }
+
+                });
+
+                
+
+                // 컨테이너를 비우고 프래그먼트의 내용을 한 번에 추가
+
+                container.innerHTML = '';
+
+                container.appendChild(fragment);
+
+            }
+
+    
+
+            // 페이지 로드 시 실행
+
+            document.addEventListener('DOMContentLoaded', () => {
+
+                // originalShopCards 초기화
+
+                originalShopCards = Array.from(document.querySelectorAll('.shop-card'));
+
+    
+
+                updateScheduleBadges();
+
+                
+
+                // 초기 랜덤 정렬
+
+                applyFilters();
+
+    
+
+                // 필터 버튼 이벤트
+
+                const filterBtns = document.querySelectorAll('.filter-btn');
+
+                filterBtns.forEach(btn => {
+
+                    btn.addEventListener('click', () => {
+
+                        filterBtns.forEach(b => b.classList.remove('active'));
+
+                        btn.classList.add('active');
+
+                        applyFilters();
+
+                    });
+
+                });
+
+    
+
+                // 지역 선택 이벤트
+
+                const regionSelect = document.getElementById('regionSelect');
+
+                regionSelect.addEventListener('change', applyFilters);
+
             });
 
-            // 지역 선택 이벤트
-            const regionSelect = document.getElementById('regionSelect');
-            regionSelect.addEventListener('change', applyFilters);
-        });
-    </script>
+        </script>
 </body>
 </html>
