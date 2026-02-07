@@ -1268,6 +1268,7 @@
                     </div>
                 </div>
             </div>
+            
             <!-- 베이크콩 -->
             <div class="shop-card" data-region="부산" data-delivery-day="상시" data-pickup-day="화,수,목,금,토" data-always-available="true">
                 <h2 class="shop-name">베이크콩</h2>
@@ -1776,125 +1777,247 @@
 
     
 
-            // 필터 적용
-
-            function applyFilters() {
-
-                const activeFilter = document.querySelector('.filter-btn.active');
-
-                const filter = activeFilter ? activeFilter.dataset.filter : 'all';
-
-                const regionSelect = document.getElementById('regionSelect');
-
-                const selectedRegion = regionSelect.value;
-
-                const container = document.getElementById('shopList');
+                    // 필터 적용
 
     
 
-                // 1. 모든 카드를 일단 보이게 초기화 (원본 리스트 기준)
-
-                originalShopCards.forEach(card => {
-
-                    card.style.display = 'block';
-
-                });
+                    function applyFilters() {
 
     
 
-                // 2. 표시할 카드들을 필터링 (지역 필터 우선)
-
-                let cardsToDisplay = originalShopCards.filter(card => {
-
-                    const cardRegion = card.dataset.region;
-
-                    return selectedRegion === 'all' || cardRegion === selectedRegion;
-
-                });
+                        // Always re-initialize originalShopCards and update their badges
 
     
 
-                // 3. '상시 판매' 탭인 경우에만 추가 필터링 적용
-
-                if (filter === 'always-available') {
-
-                    cardsToDisplay = cardsToDisplay.filter(card => card.dataset.alwaysAvailable === 'true');
-
-                }
+                        // to account for any new elements added to the DOM dynamically.
 
     
 
-                // 4. 필터에 따른 정렬 적용
-
-                if (filter === 'all') {
-
-                    cardsToDisplay = shuffleArray(cardsToDisplay);
-
-                } else if (filter === 'delivery-soon') {
-
-                    cardsToDisplay.sort((a, b) => {
-
-                        const aMinutes = parseInt(a.dataset.deliveryMinutes) || 999999;
-
-                        const bMinutes = parseInt(b.dataset.deliveryMinutes) || 999999;
-
-                        return aMinutes - bMinutes;
-
-                    });
-
-                } else if (filter === 'pickup-soon') {
-
-                    cardsToDisplay.sort((a, b) => {
-
-                        const aMinutes = parseInt(a.dataset.pickupMinutes) || 999999;
-
-                        const bMinutes = parseInt(b.dataset.pickupMinutes) || 999999;
-
-                        return aMinutes - bMinutes;
-
-                    });
-
-                }
+                        originalShopCards = Array.from(document.querySelectorAll('.shop-card'));
 
     
 
-                // 5. 컨테이너의 자식 요소를 정렬된 순서대로 재배치 및 표시/숨김 처리
-
-                // DOM 조작을 최소화하기 위해 문서 프래그먼트를 사용합니다.
-
-                const fragment = document.createDocumentFragment();
-
-                cardsToDisplay.forEach(card => {
-
-                    card.style.display = 'block'; // 표시할 카드는 보이게 설정
-
-                    fragment.appendChild(card);
-
-                });
+                        updateScheduleBadges(); // Ensure data-attributes are set for all cards, including new ones
 
     
 
-                // cardsToDisplay에 포함되지 않은 원본 카드들은 숨김 처리
+            
 
-                originalShopCards.forEach(card => {
+    
 
-                    if (!cardsToDisplay.includes(card)) {
+                        const activeFilter = document.querySelector('.filter-btn.active');
 
-                        card.style.display = 'none';
+    
+
+                        const filter = activeFilter ? activeFilter.dataset.filter : 'all';
+
+    
+
+                        const regionSelect = document.getElementById('regionSelect');
+
+    
+
+                        const selectedRegion = regionSelect.value;
+
+    
+
+                        const container = document.getElementById('shopList');
+
+    
+
+            
+
+    
+
+                        // Start with a fresh list of cards to potentially display
+
+    
+
+                        let cardsToProcess = originalShopCards;
+
+    
+
+            
+
+    
+
+                        // Apply region filter
+
+    
+
+                        cardsToProcess = cardsToProcess.filter(card => {
+
+    
+
+                            const cardRegion = card.dataset.region;
+
+    
+
+                            return selectedRegion === 'all' || cardRegion === selectedRegion;
+
+    
+
+                        });
+
+    
+
+            
+
+    
+
+                        // Apply specific tab filter (e.g., 'always-available')
+
+    
+
+                        if (filter === 'always-available') {
+
+    
+
+                            cardsToProcess = cardsToProcess.filter(card => card.dataset.alwaysAvailable === 'true');
+
+    
+
+                        }
+
+    
+
+            
+
+    
+
+                        // Apply sorting based on filter
+
+    
+
+                        if (filter === 'all') {
+
+    
+
+                            cardsToProcess = shuffleArray(cardsToProcess);
+
+    
+
+                        } else if (filter === 'delivery-soon') {
+
+    
+
+                            cardsToProcess.sort((a, b) => {
+
+    
+
+                                const aMinutes = parseInt(a.dataset.deliveryMinutes) || 999999;
+
+    
+
+                                const bMinutes = parseInt(b.dataset.deliveryMinutes) || 999999;
+
+    
+
+                                return aMinutes - bMinutes;
+
+    
+
+                            });
+
+    
+
+                        } else if (filter === 'pickup-soon') {
+
+    
+
+                            cardsToProcess.sort((a, b) => {
+
+    
+
+                                const aMinutes = parseInt(a.dataset.pickupMinutes) || 999999;
+
+    
+
+                                const bMinutes = parseInt(b.dataset.pickupMinutes) || 999999;
+
+    
+
+                                return aMinutes - bMinutes;
+
+    
+
+                            });
+
+    
+
+                        }
+
+    
+
+            
+
+    
+
+                        // --- DOM Manipulation for display and order ---
+
+    
+
+                        // 1. Hide all original cards first
+
+    
+
+                        originalShopCards.forEach(card => {
+
+    
+
+                            card.style.display = 'none';
+
+    
+
+                        });
+
+    
+
+            
+
+    
+
+                        // 2. Clear the container to ensure correct order
+
+    
+
+                        while (container.firstChild) {
+
+    
+
+                            container.removeChild(container.firstChild);
+
+    
+
+                        }
+
+    
+
+            
+
+    
+
+                        // 3. Append only the cards to display in their sorted order and make them visible
+
+    
+
+                        cardsToProcess.forEach(card => {
+
+    
+
+                            card.style.display = 'block';
+
+    
+
+                            container.appendChild(card);
+
+    
+
+                        });
+
+    
 
                     }
-
-                });
-
-                
-
-                // 컨테이너를 비우고 프래그먼트의 내용을 한 번에 추가
-
-                container.innerHTML = '';
-
-                container.appendChild(fragment);
-
-            }
 
     
 
