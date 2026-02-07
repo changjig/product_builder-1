@@ -676,6 +676,7 @@
                 <button class="filter-btn active" data-filter="all">전체보기</button>
                 <button class="filter-btn" data-filter="delivery-soon">택배 임박순</button>
                 <button class="filter-btn" data-filter="pickup-soon">현장판매 임박순</button>
+                <button class="filter-btn" data-filter="always-available">상시 판매</button>
             </div>
             <div class="filter-group" style="margin-top: 15px;">
                 <span class="filter-label">📍 지역:</span>
@@ -1494,6 +1495,9 @@
                         const daysUntil = Math.floor(result.minutes / (24 * 60));
                         card.dataset.deliveryMinutes = result.minutes;
                         card.dataset.deliveryDay = daysUntil;
+
+                        // 상시 판매 여부 설정
+                        card.dataset.alwaysAvailable = scheduleText.includes('상시') ? 'true' : 'false';
                         
                         // 배지 업데이트
                         let badge = row.querySelector('.badge');
@@ -1600,6 +1604,9 @@
                     const bMinutes = parseInt(b.dataset.pickupMinutes) || 999999;
                     return aMinutes - bMinutes;
                 });
+            } else if (filter === 'always-available') {
+                // 상시 판매: alwaysAvailable이 true인 카드만 필터링
+                sortedCards = filteredCards.filter(card => card.dataset.alwaysAvailable === 'true');
             }
 
             // DOM 업데이트
