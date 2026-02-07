@@ -1584,59 +1584,47 @@
             const regionSelect = document.getElementById('regionSelect');
             const selectedRegion = regionSelect.value;
             const container = document.getElementById('shopList');
-            const allShopCards = Array.from(document.querySelectorAll('.shop-card')); // Get all cards once
+            const allShopCards = Array.from(document.querySelectorAll('.shop-card'));
 
-            console.log('--- Applying Filters ---');
-            console.log('Active filter:', filter);
-            console.log('Selected region:', selectedRegion);
-            console.log('Total shop cards:', allShopCards.length);
+            // 1. 모든 카드를 일단 숨김 처리
+            allShopCards.forEach(card => {
+                card.style.display = 'none';
+            });
 
-            let cardsToProcess = allShopCards.filter(card => {
+            // 2. 표시할 카드들을 필터링 (지역 필터 우선)
+            let cardsToDisplay = allShopCards.filter(card => {
                 const cardRegion = card.dataset.region;
                 return selectedRegion === 'all' || cardRegion === selectedRegion;
             });
-            console.log('Cards after region filter:', cardsToProcess.length);
 
+            // 3. '상시 판매' 탭인 경우에만 추가 필터링 적용
             if (filter === 'always-available') {
-                cardsToProcess = cardsToProcess.filter(card => card.dataset.alwaysAvailable === 'true');
-                console.log('Cards after always-available filter:', cardsToProcess.length);
+                cardsToDisplay = cardsToDisplay.filter(card => card.dataset.alwaysAvailable === 'true');
             }
 
-            // Apply sorting to cardsToProcess
-            if (filter === 'all' || filter === 'always-available') {
-                // For 'all' and 'always-available', shuffle the visible cards
-                cardsToProcess = shuffleArray(cardsToProcess);
-                console.log('Cards after shuffling (all or always-available):', cardsToProcess.length);
+            // 4. 필터에 따른 정렬 적용
+            if (filter === 'all') {
+                cardsToDisplay = shuffleArray(cardsToDisplay);
             } else if (filter === 'delivery-soon') {
-                cardsToProcess.sort((a, b) => {
+                cardsToDisplay.sort((a, b) => {
                     const aMinutes = parseInt(a.dataset.deliveryMinutes) || 999999;
                     const bMinutes = parseInt(b.dataset.deliveryMinutes) || 999999;
                     return aMinutes - bMinutes;
                 });
-                console.log('Cards after delivery-soon sort:', cardsToProcess.length);
             } else if (filter === 'pickup-soon') {
-                cardsToProcess.sort((a, b) => {
+                cardsToDisplay.sort((a, b) => {
                     const aMinutes = parseInt(a.dataset.pickupMinutes) || 999999;
                     const bMinutes = parseInt(b.dataset.pickupMinutes) || 999999;
                     return aMinutes - bMinutes;
                 });
-                console.log('Cards after pickup-soon sort:', cardsToProcess.length);
             }
 
-            // Clear existing content and append filtered/sorted cards
+            // 5. 컨테이너를 비우고, 필터링 및 정렬된 카드들을 다시 추가
             container.innerHTML = '';
-            cardsToProcess.forEach(card => {
-                card.style.display = 'block'; // Ensure card is visible
+            cardsToDisplay.forEach(card => {
+                card.style.display = 'block'; // 표시할 카드는 보이게 설정
                 container.appendChild(card);
             });
-
-            // Hide cards that are not in cardsToProcess (i.e., filtered out by region or always-available)
-            allShopCards.forEach(card => {
-                if (!cardsToProcess.includes(card)) {
-                    card.style.display = 'none';
-                }
-            });
-            console.log('--- Filters Applied ---');
         }
 
         // 페이지 로드 시 실행
