@@ -1777,247 +1777,235 @@
 
     
 
-                    // 필터 적용
+                            // 필터 적용
 
     
 
-                    function applyFilters() {
+                            function applyFilters() {
 
     
 
-                        // Always re-initialize originalShopCards and update their badges
+                                const activeFilter = document.querySelector('.filter-btn.active');
 
     
 
-                        // to account for any new elements added to the DOM dynamically.
+                                const filter = activeFilter ? activeFilter.dataset.filter : 'all';
 
     
 
-                        originalShopCards = Array.from(document.querySelectorAll('.shop-card'));
+                                const regionSelect = document.getElementById('regionSelect');
 
     
 
-                        updateScheduleBadges(); // Ensure data-attributes are set for all cards, including new ones
+                                const selectedRegion = regionSelect.value;
 
     
 
-            
+                                const container = document.getElementById('shopList');
 
     
 
-                        const activeFilter = document.querySelector('.filter-btn.active');
+                    
 
     
 
-                        const filter = activeFilter ? activeFilter.dataset.filter : 'all';
+                                // Start with a fresh list of cards to potentially display
 
     
 
-                        const regionSelect = document.getElementById('regionSelect');
+                                let cardsToProcess = originalShopCards; // Use the globally initialized list
 
     
 
-                        const selectedRegion = regionSelect.value;
+                    
 
     
 
-                        const container = document.getElementById('shopList');
+                                // Apply region filter
 
     
 
-            
+                                cardsToProcess = cardsToProcess.filter(card => {
 
     
 
-                        // Start with a fresh list of cards to potentially display
+                                    const cardRegion = card.dataset.region;
 
     
 
-                        let cardsToProcess = originalShopCards;
+                                    return selectedRegion === 'all' || cardRegion === selectedRegion;
 
     
 
-            
+                                });
 
     
 
-                        // Apply region filter
+                    
 
     
 
-                        cardsToProcess = cardsToProcess.filter(card => {
+                                // Apply specific tab filter (e.g., 'always-available')
 
     
 
-                            const cardRegion = card.dataset.region;
+                                if (filter === 'always-available') {
 
     
 
-                            return selectedRegion === 'all' || cardRegion === selectedRegion;
+                                    cardsToProcess = cardsToProcess.filter(card => card.dataset.alwaysAvailable === 'true');
 
     
 
-                        });
+                                }
 
     
 
-            
+                    
 
     
 
-                        // Apply specific tab filter (e.g., 'always-available')
+                                // Apply sorting based on filter
 
     
 
-                        if (filter === 'always-available') {
+                                if (filter === 'all') {
 
     
 
-                            cardsToProcess = cardsToProcess.filter(card => card.dataset.alwaysAvailable === 'true');
+                                    cardsToProcess = shuffleArray(cardsToProcess);
 
     
 
-                        }
+                                } else if (filter === 'delivery-soon') {
 
     
 
-            
+                                    cardsToProcess.sort((a, b) => {
 
     
 
-                        // Apply sorting based on filter
+                                        const aMinutes = parseInt(a.dataset.deliveryMinutes) || 999999;
 
     
 
-                        if (filter === 'all') {
+                                        const bMinutes = parseInt(b.dataset.deliveryMinutes) || 999999;
 
     
 
-                            cardsToProcess = shuffleArray(cardsToProcess);
+                                        return aMinutes - bMinutes;
 
     
 
-                        } else if (filter === 'delivery-soon') {
+                                    });
 
     
 
-                            cardsToProcess.sort((a, b) => {
+                                } else if (filter === 'pickup-soon') {
 
     
 
-                                const aMinutes = parseInt(a.dataset.deliveryMinutes) || 999999;
+                                    cardsToProcess.sort((a, b) => {
 
     
 
-                                const bMinutes = parseInt(b.dataset.deliveryMinutes) || 999999;
+                                        const aMinutes = parseInt(a.dataset.pickupMinutes) || 999999;
 
     
 
-                                return aMinutes - bMinutes;
+                                        const bMinutes = parseInt(b.dataset.pickupMinutes) || 999999;
 
     
 
-                            });
+                                        return aMinutes - bMinutes;
 
     
 
-                        } else if (filter === 'pickup-soon') {
+                                    });
 
     
 
-                            cardsToProcess.sort((a, b) => {
+                                }
 
     
 
-                                const aMinutes = parseInt(a.dataset.pickupMinutes) || 999999;
+                    
 
     
 
-                                const bMinutes = parseInt(b.dataset.pickupMinutes) || 999999;
+                                // --- DOM Manipulation for display and order ---
 
     
 
-                                return aMinutes - bMinutes;
+                                // Clear the container to ensure correct order
 
     
 
-                            });
+                                while (container.firstChild) {
 
     
 
-                        }
+                                    container.removeChild(container.firstChild);
 
     
 
-            
+                                }
 
     
 
-                        // --- DOM Manipulation for display and order ---
+                    
 
     
 
-                        // 1. Hide all original cards first
+                                // Append only the cards to display in their sorted order and make them visible
 
     
 
-                        originalShopCards.forEach(card => {
+                                cardsToProcess.forEach(card => {
 
     
 
-                            card.style.display = 'none';
+                                    card.style.display = 'block'; // Ensure card is visible
 
     
 
-                        });
+                                    container.appendChild(card);
 
     
 
-            
+                                });
 
     
 
-                        // 2. Clear the container to ensure correct order
+                    
 
     
 
-                        while (container.firstChild) {
+                                // Hide cards that are NOT in cardsToProcess (from the full original list)
 
     
 
-                            container.removeChild(container.firstChild);
+                                originalShopCards.forEach(card => {
 
     
 
-                        }
+                                    if (!cardsToProcess.includes(card)) {
 
     
 
-            
+                                        card.style.display = 'none';
 
     
 
-                        // 3. Append only the cards to display in their sorted order and make them visible
+                                    }
 
     
 
-                        cardsToProcess.forEach(card => {
+                                });
 
     
 
-                            card.style.display = 'block';
-
-    
-
-                            container.appendChild(card);
-
-    
-
-                        });
-
-    
-
-                    }
+                            }
 
     
 
