@@ -1584,53 +1584,46 @@
             const regionSelect = document.getElementById('regionSelect');
             const selectedRegion = regionSelect.value;
             const container = document.getElementById('shopList');
-            const shopCards = Array.from(document.querySelectorAll('.shop-card'));
+            const allShopCards = Array.from(document.querySelectorAll('.shop-card')); // Get all cards once
 
-            // 지역 필터 먼저 적용
-            const filteredCards = shopCards.filter(card => {
+            let visibleCards = allShopCards.filter(card => {
                 const cardRegion = card.dataset.region;
                 return selectedRegion === 'all' || cardRegion === selectedRegion;
             });
 
-            // 숨겨진 카드들
-            const hiddenCards = shopCards.filter(card => {
-                const cardRegion = card.dataset.region;
-                return selectedRegion !== 'all' && cardRegion !== selectedRegion;
-            });
+            if (filter === 'always-available') {
+                visibleCards = visibleCards.filter(card => card.dataset.alwaysAvailable === 'true');
+            }
 
-            // 정렬 적용
-            let sortedCards = [...filteredCards];
-            if (filter === 'all') {
-                // 전체보기: 랜덤 정렬
-                sortedCards = shuffleArray(sortedCards);
+            // 정렬 적용 (only apply sorting to the visible cards)
+            if (filter === 'all' || filter === 'always-available') { // 'all' or 'always-available' tabs should shuffle the visible ones
+                visibleCards = shuffleArray(visibleCards);
             } else if (filter === 'delivery-soon') {
-                // 택배 임박순: 분 단위로 정렬 (시간까지 고려)
-                sortedCards.sort((a, b) => {
+                visibleCards.sort((a, b) => {
                     const aMinutes = parseInt(a.dataset.deliveryMinutes) || 999999;
                     const bMinutes = parseInt(b.dataset.deliveryMinutes) || 999999;
                     return aMinutes - bMinutes;
                 });
             } else if (filter === 'pickup-soon') {
-                // 현장판매 임박순: 분 단위로 정렬 (시간까지 고려)
-                sortedCards.sort((a, b) => {
+                visibleCards.sort((a, b) => {
                     const aMinutes = parseInt(a.dataset.pickupMinutes) || 999999;
                     const bMinutes = parseInt(b.dataset.pickupMinutes) || 999999;
                     return aMinutes - bMinutes;
                 });
-            } else if (filter === 'always-available') {
-                // 상시 판매: alwaysAvailable이 true인 카드만 필터링
-                sortedCards = filteredCards.filter(card => card.dataset.alwaysAvailable === 'true');
             }
 
             // DOM 업데이트
-            container.innerHTML = '';
-            sortedCards.forEach(card => {
+            container.innerHTML = ''; // Clear container
+            visibleCards.forEach(card => {
                 card.style.display = 'block';
                 container.appendChild(card);
             });
-            hiddenCards.forEach(card => {
-                card.style.display = 'none';
-                container.appendChild(card);
+
+            // Hide cards that are not in visibleCards but are in allShopCards
+            allShopCards.forEach(card => {
+                if (!visibleCards.includes(card)) {
+                    card.style.display = 'none';
+                }
             });
         }
 
