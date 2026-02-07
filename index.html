@@ -1586,31 +1586,41 @@
             const container = document.getElementById('shopList');
             const allShopCards = Array.from(document.querySelectorAll('.shop-card')); // Get all cards once
 
+            console.log('--- Applying Filters ---');
+            console.log('Active filter:', filter);
+            console.log('Selected region:', selectedRegion);
+            console.log('Total shop cards:', allShopCards.length);
+
             let cardsToProcess = allShopCards.filter(card => {
                 const cardRegion = card.dataset.region;
                 return selectedRegion === 'all' || cardRegion === selectedRegion;
             });
+            console.log('Cards after region filter:', cardsToProcess.length);
 
             if (filter === 'always-available') {
                 cardsToProcess = cardsToProcess.filter(card => card.dataset.alwaysAvailable === 'true');
+                console.log('Cards after always-available filter:', cardsToProcess.length);
             }
 
             // Apply sorting to cardsToProcess
             if (filter === 'all' || filter === 'always-available') {
                 // For 'all' and 'always-available', shuffle the visible cards
                 cardsToProcess = shuffleArray(cardsToProcess);
+                console.log('Cards after shuffling (all or always-available):', cardsToProcess.length);
             } else if (filter === 'delivery-soon') {
                 cardsToProcess.sort((a, b) => {
                     const aMinutes = parseInt(a.dataset.deliveryMinutes) || 999999;
                     const bMinutes = parseInt(b.dataset.deliveryMinutes) || 999999;
                     return aMinutes - bMinutes;
                 });
+                console.log('Cards after delivery-soon sort:', cardsToProcess.length);
             } else if (filter === 'pickup-soon') {
                 cardsToProcess.sort((a, b) => {
                     const aMinutes = parseInt(a.dataset.pickupMinutes) || 999999;
                     const bMinutes = parseInt(b.dataset.pickupMinutes) || 999999;
                     return aMinutes - bMinutes;
                 });
+                console.log('Cards after pickup-soon sort:', cardsToProcess.length);
             }
 
             // Clear existing content and append filtered/sorted cards
@@ -1626,6 +1636,7 @@
                     card.style.display = 'none';
                 }
             });
+            console.log('--- Filters Applied ---');
         }
 
         // 페이지 로드 시 실행
