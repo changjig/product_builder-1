@@ -1586,42 +1586,43 @@
             const container = document.getElementById('shopList');
             const allShopCards = Array.from(document.querySelectorAll('.shop-card')); // Get all cards once
 
-            let visibleCards = allShopCards.filter(card => {
+            let cardsToProcess = allShopCards.filter(card => {
                 const cardRegion = card.dataset.region;
                 return selectedRegion === 'all' || cardRegion === selectedRegion;
             });
 
             if (filter === 'always-available') {
-                visibleCards = visibleCards.filter(card => card.dataset.alwaysAvailable === 'true');
+                cardsToProcess = cardsToProcess.filter(card => card.dataset.alwaysAvailable === 'true');
             }
 
-            // 정렬 적용 (only apply sorting to the visible cards)
-            if (filter === 'all' || filter === 'always-available') { // 'all' or 'always-available' tabs should shuffle the visible ones
-                visibleCards = shuffleArray(visibleCards);
+            // Apply sorting to cardsToProcess
+            if (filter === 'all' || filter === 'always-available') {
+                // For 'all' and 'always-available', shuffle the visible cards
+                cardsToProcess = shuffleArray(cardsToProcess);
             } else if (filter === 'delivery-soon') {
-                visibleCards.sort((a, b) => {
+                cardsToProcess.sort((a, b) => {
                     const aMinutes = parseInt(a.dataset.deliveryMinutes) || 999999;
                     const bMinutes = parseInt(b.dataset.deliveryMinutes) || 999999;
                     return aMinutes - bMinutes;
                 });
             } else if (filter === 'pickup-soon') {
-                visibleCards.sort((a, b) => {
+                cardsToProcess.sort((a, b) => {
                     const aMinutes = parseInt(a.dataset.pickupMinutes) || 999999;
                     const bMinutes = parseInt(b.dataset.pickupMinutes) || 999999;
                     return aMinutes - bMinutes;
                 });
             }
 
-            // DOM 업데이트
-            container.innerHTML = ''; // Clear container
-            visibleCards.forEach(card => {
-                card.style.display = 'block';
+            // Clear existing content and append filtered/sorted cards
+            container.innerHTML = '';
+            cardsToProcess.forEach(card => {
+                card.style.display = 'block'; // Ensure card is visible
                 container.appendChild(card);
             });
 
-            // Hide cards that are not in visibleCards but are in allShopCards
+            // Hide cards that are not in cardsToProcess (i.e., filtered out by region or always-available)
             allShopCards.forEach(card => {
-                if (!visibleCards.includes(card)) {
+                if (!cardsToProcess.includes(card)) {
                     card.style.display = 'none';
                 }
             });
