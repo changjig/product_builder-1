@@ -1653,169 +1653,106 @@
     
 
             // 일정 배지 업데이트 (originalShopCards 사용)
-
             function updateScheduleBadges() {
+                // Define the holiday period for "파티세리시즈널"
+                const holidayShopName = '파티세리시즈널';
+                const holidayWeekStartDate = new Date('2026-02-09T00:00:00'); // Assuming start of the week for holiday
+                const holidayWeekEndDate = new Date('2026-02-15T23:59:59');   // Assuming end of the week for holiday
 
                 originalShopCards.forEach(card => {
-
                     const infoRows = card.querySelectorAll('.info-row');
-
-                    
+                    const shopName = card.querySelector('.shop-name').textContent.trim();
 
                     infoRows.forEach((row, index) => {
-
                         const label = row.querySelector('.info-label');
-
                         const valueElement = row.querySelector('.info-value');
-
                         
-
                         if (!label || !valueElement) return;
-
                         
-
                         if (label.textContent.includes('📍')) {
-
                             const address = valueElement.textContent;
-
                             const region = getRegionFromAddress(address);
-
                             card.dataset.region = region;
-
                         }
-
                         
-
                         if (index === 0 && label.textContent.includes('📅')) {
-
-                            const scheduleText = valueElement.textContent;
-
-                            const days = extractDaysFromSchedule(scheduleText);
-
-                            const scheduleTime = extractTimeFromText(scheduleText);
-
-                            const result = getMinutesUntil(days, scheduleTime);
-
-                            
-
-                            const daysUntil = Math.floor(result.minutes / (24 * 60));
-
-                            card.dataset.deliveryMinutes = result.minutes;
-
-                            card.dataset.deliveryDay = daysUntil;
-
-    
-
-                            card.dataset.alwaysAvailable = scheduleText.includes('상시') ? 'true' : 'false';
-
-                            
-
-                            let badge = row.querySelector('.badge');
-
-                            if (badge && result.minutes < 999999 && result.dayOfWeek !== null) {
-
-                                const hoursUntil = Math.floor(result.minutes / 60);
-
-                                
-
-                                if (hoursUntil < 1) {
-
-                                    badge.textContent = `임박`;
-
-                                } else if (hoursUntil < 24) {
-
-                                    badge.textContent = `${hoursUntil}시간 후`;
-
-                                } else {
-
-                                    const daysUntil = Math.floor(result.minutes / (24 * 60));
-
-                                    if (daysUntil === 1) {
-
-                                        badge.textContent = `내일 (${dayNamesShort[result.dayOfWeek]})`;
-
-                                    } else {
-
-                                        badge.textContent = `${daysUntil}일 후 (${dayNamesShort[result.dayOfWeek]})`;
-
-                                    }
-
+                            // Check if it's the specific shop and within the holiday week
+                            if (shopName === holidayShopName && today >= holidayWeekStartDate && today <= holidayWeekEndDate) {
+                                valueElement.innerHTML = '이번 주 휴무 <span style="color:red; font-weight:bold;">(택배 없음)</span>';
+                                let badge = row.querySelector('.badge');
+                                if (badge) {
+                                    badge.remove();
                                 }
+                                card.dataset.deliveryMinutes = 999999; // Effectively remove from "delivery-soon" sorting
+                                card.dataset.deliveryDay = 999999;
+                                card.dataset.alwaysAvailable = 'false'; // Not always available
+                            } else {
+                                const scheduleText = valueElement.textContent;
+                                const days = extractDaysFromSchedule(scheduleText);
+                                const scheduleTime = extractTimeFromText(scheduleText);
+                                const result = getMinutesUntil(days, scheduleTime);
+                                
+                                const daysUntil = Math.floor(result.minutes / (24 * 60));
+                                card.dataset.deliveryMinutes = result.minutes;
+                                card.dataset.deliveryDay = daysUntil;
 
-                            } else if (badge && result.minutes === 999999) {
-
-                                badge.remove();
-
+                                card.dataset.alwaysAvailable = scheduleText.includes('상시') ? 'true' : 'false';
+                                
+                                let badge = row.querySelector('.badge');
+                                if (badge && result.minutes < 999999 && result.dayOfWeek !== null) {
+                                    const hoursUntil = Math.floor(result.minutes / 60);
+                                    
+                                    if (hoursUntil < 1) {
+                                        badge.textContent = `임박`;
+                                    } else if (hoursUntil < 24) {
+                                        badge.textContent = `${hoursUntil}시간 후`;
+                                    } else {
+                                        const daysUntil = Math.floor(result.minutes / (24 * 60));
+                                        if (daysUntil === 1) {
+                                            badge.textContent = `내일 (${dayNamesShort[result.dayOfWeek]})`;
+                                        } else {
+                                            badge.textContent = `${daysUntil}일 후 (${dayNamesShort[result.dayOfWeek]})`;
+                                        }
+                                    }
+                                } else if (badge && result.minutes === 999999) {
+                                    badge.remove();
+                                }
                             }
-
                         }
-
                         
-
                         if (index === 4 && label.textContent.includes('🏪')) {
-
+                            // Existing pickup schedule logic
                             const scheduleText = valueElement.textContent;
-
                             const days = extractDaysFromSchedule(scheduleText);
-
                             const scheduleTime = extractTimeFromText(scheduleText);
-
                             const result = getMinutesUntil(days, scheduleTime);
-
                             
-
                             const daysUntil = Math.floor(result.minutes / (24 * 60));
-
                             card.dataset.pickupMinutes = result.minutes;
-
                             card.dataset.pickupDay = daysUntil;
-
                             
-
                             let badge = row.querySelector('.badge');
-
                             if (badge && result.minutes < 999999 && result.dayOfWeek !== null) {
-
                                 const hoursUntil = Math.floor(result.minutes / 60);
-
                                 
-
                                 if (hoursUntil < 1) {
-
                                     badge.textContent = `임박`;
-
                                 } else if (hoursUntil < 24) {
-
                                     badge.textContent = `${hoursUntil}시간 후`;
-
                                 } else {
-
                                     const daysUntil = Math.floor(result.minutes / (24 * 60));
-
                                     if (daysUntil === 1) {
-
                                         badge.textContent = `내일 (${dayNamesShort[result.dayOfWeek]})`;
-
                                     } else {
-
                                         badge.textContent = `${daysUntil}일 후 (${dayNamesShort[result.dayOfWeek]})`;
-
                                     }
-
                                 }
-
                             } else if (badge && result.minutes === 999999) {
-
                                 badge.remove();
-
                             }
-
                         }
-
                     });
-
                 });
-
             }
 
     
